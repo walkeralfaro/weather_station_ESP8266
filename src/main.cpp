@@ -5,18 +5,18 @@
 #include <WiFiUdp.h>
 #include <ArduinoJson.h>
 
-const char* ssid = "TP-Link_6AC2";
-const char* password = "20984878";
-const char* mqtt_server = "broker.emqx.io";
-int mqtt_port = 1883;
-const char* topic = "EM_JMPS2285";
+const char* ssid = WIFI_SSID;
+const char* password = WIFI_PASS;
+const char* mqtt_server = MQTT_SERVER;
+int mqtt_port = MQTT_PORT;
+const char* topic = MQTT_TOPIC;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 
 // Define NTP Client to get time
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "pool.ntp.org");
+NTPClient timeClient(ntpUDP, UDP_SERVER);
 
 unsigned long epochTime; 
 
@@ -56,7 +56,7 @@ void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
 
-    if (client.connect("ESP8266Client_EM_JMPS2285")) {
+    if (client.connect(CLIENT_CNN)) {
       Serial.println("connected");
       client.publish(topic, "reconnected!");
     } else {
@@ -85,7 +85,7 @@ void loop() {
   unsigned long now = millis();
 
 
-  if (now - lastMsg > 10000) {
+  if (now - lastMsg > 30000) {
     lastMsg = now;
     fotoval = analogRead(fotopin);
     epochTime = getTime();
