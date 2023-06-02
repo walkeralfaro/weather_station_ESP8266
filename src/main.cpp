@@ -3,7 +3,7 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
-#include <Connections.h>
+#include <Connections.h> // retorna la funcion setup_wifi()
 #include <Functions.h>
 #include <DHT.h>
 #include <Wire.h>
@@ -11,8 +11,8 @@
 
 SFE_BMP180 bmp180;
 
-const char* ssid = WIFI_SSID;
-const char* password = WIFI_PASS;
+bool tickFlag = false;
+
 const char* mqtt_server = MQTT_SERVER;
 int mqtt_port = MQTT_PORT;
 const char* topic = MQTT_TOPIC;
@@ -29,7 +29,7 @@ unsigned long timeStamp;
 
 // millis() variables
 unsigned long current_time, prev_time;
-uint16_t dt_ms = 10000;
+uint16_t dt_ms = 30000;
 
 // DHT11 sensor variables
 const int DHT11_PIN = 0;
@@ -41,6 +41,10 @@ int light = D3;
 
 // BMP180 variables
 double* TPAarr;
+
+void startMeasurement() {
+  tickFlag = true;
+}
 
 void reconnect() {
   while (!client.connected()) {
@@ -61,7 +65,8 @@ void reconnect() {
 
 void setup() {
   Serial.begin(115200);
-  setup_wifi(ssid, password);
+  setup_wifi();
+
   client.setServer(mqtt_server, mqtt_port);
 
   // Begin I2C communication
@@ -81,10 +86,8 @@ void loop() {
   }
 
   client.loop();
-	current_time = millis();
 
-	if ( current_time - prev_time > dt_ms ) {
-		prev_time = current_time;
+	if ( tickFlag ) {
 
     humidity = dht.getHumidity();
     light = analogRead(LIGHT_PIN);
@@ -104,5 +107,8 @@ void loop() {
     Serial.print("Publish message: ");
     Serial.println(payload);
     client.publish(topic, (char*)payload.c_str());
+
+    tickFlag = false;
   }
 }
+
