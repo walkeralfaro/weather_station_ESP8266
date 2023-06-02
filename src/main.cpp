@@ -27,10 +27,6 @@ DHT dht;
 // Epoch UNIX variable
 unsigned long timeStamp; 
 
-// millis() variables
-unsigned long current_time, prev_time;
-uint16_t dt_ms = 30000;
-
 // DHT11 sensor variables
 const int DHT11_PIN = 0;
 float humidity;
