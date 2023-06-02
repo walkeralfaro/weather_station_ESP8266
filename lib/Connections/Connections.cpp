@@ -18,7 +18,7 @@ void setup_wifi() {
 
   // wifiManager.resetSettings();
 
-  WiFiManagerParameter customParam("variable", "Measurement Time (5, 10, 15 or 30)", "15", 2);
+  WiFiManagerParameter customParam("variable", "Measurement Time (5, 10, 15 or 30)", "10", 2);
   wifiManager.addParameter(&customParam);
 
   wifiManager.setTimeout(180);
@@ -34,7 +34,7 @@ void setup_wifi() {
   String customParamValue = customParam.getValue();
   measurementTimeValue = customParamValue.toInt();
   if (measurementTimeValue != 5 && measurementTimeValue != 10 && measurementTimeValue != 15 && measurementTimeValue != 30) {
-    measurementTimeValue = 15;
+    measurementTimeValue = 10;
   }
 
   Serial.println("connected...");
